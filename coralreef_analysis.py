@@ -4,8 +4,8 @@ Coral Reef Monitoring and Analysis Script
 This script analyzes CREMP (Coral Reef Evaluation and Monitoring Project) data
 to assess coral reef health trends, species richness, and future projections.
 
-Author: [Your Name]
-Date: [Date]
+Author: Cece Foltz
+Date: 03/31/2026
 """
 
 import os
