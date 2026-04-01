@@ -189,7 +189,7 @@ def calculate_coral_metrics(df, species_cols):
         Dataframe with added TotalCover and SpeciesRichness columns
     """
     df = df.copy()
-    df['TotalCover'] = df[species_cols].sum(axis=1)
+    df['TotalCover'] = df[species_cols].sum(axis=1, min_count=1))
     df['SpeciesRichness'] = (df[species_cols] > 0).sum(axis=1)
     return df
 
@@ -549,19 +549,17 @@ def process_temperature_data(filepath, chunk_size=CHUNK_SIZE):
     site_temps = {}
     chunks = pd.read_csv(filepath, chunksize=chunk_size)
     
-    for chunk in chunks:
-        # Group by SiteID and calculate mean temperature
-        grouped = chunk.groupby("SiteID")["TempC"].mean()
-        
-        for site_id, avg_temp in grouped.items():
-            if site_id not in site_temps:
-                site_temps[site_id] = []
-            site_temps[site_id].append(avg_temp)
+for chunk in chunks:
+  for site_id, group in chunk.groupby("SiteID")["TempC"]:
+    if site_id not in site_temps:
+        site_temps[site_id] = {'sum': 0, 'count': 0}
+    site_temps[site_id]['sum'] += group.sum()
+    site_temps[site_id]['count'] += group.count()
     
     # Calculate overall average per site
-    final_avg_temps = {
-        site: sum(temps) / len(temps) 
-        for site, temps in site_temps.items()
+final_avg_temps = {
+    site: vals['sum'] / vals['count']
+    for site, vals in site_temps.items()
     }
     
     print(f"Processed temperatures for {len(final_avg_temps)} sites")
